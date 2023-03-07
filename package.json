@@ -1,0 +1,50 @@
+{
+  "main": "node_modules/expo/AppEntry.js",
+  "scripts": {
+    "start": "expo start",
+    "android": "expo start --android",
+    "ios": "expo start --ios",
+    "web": "expo start --web"
+  },
+  "dependencies": {
+    "@aws-amplify/auth": "^4.6.14",
+    "@aws-amplify/core": "^4.7.12",
+    "@react-native-async-storage/async-storage": "^1.17.10",
+    "@react-native-community/masked-view": "^0.1.11",
+    "@react-native-community/netinfo": "9.3.0",
+    "@react-navigation/native": "^6.0.13",
+    "@react-navigation/native-stack": "6.6.1",
+    "@shopify/flash-list": "^1.4.0",
+    "amazon-cognito-identity-js": "^6.0.1",
+    "aws-amplify": "^4.3.43",
+    "eas-cli": "^3.0.0",
+    "expo": "~46.0.16",
+    "expo-barcode-scanner": "~11.4.0",
+    "expo-camera": "~12.3.0",
+    "expo-device": "~4.3.0",
+    "expo-linking": "~3.2.4",
+    "expo-screen-orientation": "~4.3.0",
+    "expo-splash-screen": "~0.16.2",
+    "expo-status-bar": "~1.4.0",
+    "jwt-decode": "^3.1.2",
+    "react": "18.0.0",
+    "react-native": "0.69.6",
+    "react-native-barcode-mask": "^1.2.4",
+    "react-native-gesture-handler": "^2.8.0",
+    "react-native-loading-button-with-animation": "^1.0.1",
+    "react-native-mask-input": "^1.2.2",
+    "react-native-modalize": "^2.1.1",
+    "react-native-reanimated": "^2.13.0",
+    "react-native-safe-area-context": "^4.3.1",
+    "react-native-screens": "~3.15.0",
+    "react-native-svg": "12.3.0",
+    "react-native-toast-notifications": "^3.3.1",
+    "react-native-uuid": "^2.0.1",
+    "react-navigation": "^4.4.4"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.12.9",
+    "react-native-svg-transformer": "^1.0.0"
+  },
+  "private": true
+}
