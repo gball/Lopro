@@ -2,7 +2,7 @@
   "expo": {
     "name": "Lopro",
     "slug": "snack-df36616d-31ec-4b15-a714-4ed692e1c413",
-    "version": "0.0.1",
+    "version": "0.1",
     "orientation": "portrait",
     "icon": "./assets/logo.png",
     "userInterfaceStyle": "light",
@@ -19,7 +19,7 @@
     ],
     "ios": {
       "bundleIdentifier": "com.main.lopro",
-      "buildNumber": "0.0.1",
+      "buildNumber": "0.1",
       "supportsTablet": true,
       "requireFullScreen": true
     },
