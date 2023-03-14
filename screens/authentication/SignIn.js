@@ -88,12 +88,14 @@ export default function SignIn({ navigation, signIn: signInCb }) {
       <TouchableOpacity onPress={() => { navigation.navigate('ForgetPassword'); setErrorMessage(''); }}>
         <Text style={styles.forgotPassword}>Forget Password?</Text>
       </TouchableOpacity>
-      <View style={styles.createAccount}>
-        <Text style={{color: '#8B909F'}}>Don't have an account? </Text>
-        <TouchableOpacity onPress={() => Link.openURL('https://lopro.io')}>
-          <Text style={{color: '#7FC803'}}>Register at lopro.io!</Text>
-        </TouchableOpacity>
-      </View>
+      { Platform.OS == 'android' &&
+        <View style={styles.createAccount}>
+          <Text style={{color: '#8B909F'}}>Don't have an account? </Text>
+          <TouchableOpacity onPress={() => Link.openURL('https://lopro.io')}>
+            <Text style={{color: '#7FC803'}}>Register at lopro.io!</Text>
+          </TouchableOpacity>
+        </View>
+      }
     </View>
   );
 }
