@@ -365,7 +365,7 @@ export default function Detail({ navigation, signOut, user }) {
             <View style={styles.modalViewPermissions}>
               <View style={[styles.modalViewCentered, styles.modalViewCenteredPermissions]}>
                 <Text style={styles.modalViewText}>Oops!</Text>
-                <Text style={styles.modalViewTextPermission}>Lopro is a camera app! To continue, you'll need to allow Camera access in Settings.</Text>
+                <Text style={styles.modalViewTextPermission}>Lopro is a camera app! To continue, you'll need to allow Camera access in Settings. Lopro would like to use your camera so you can scan barcodes to track the inventory.</Text>
                 <Button styleOverride={styles.button} children={'Open Settings'}  onPress={() => Linking.openSettings() }/>
               </View>
             </View>
