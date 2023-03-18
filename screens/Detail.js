@@ -368,7 +368,7 @@ export default function Detail({ navigation, signOut, user }) {
             <View style={styles.modalViewPermissions}>
               <View style={[styles.modalViewCentered, styles.modalViewCenteredPermissions]}>
                 <Text style={styles.modalViewText}>Oops!</Text>
-                <Text style={styles.modalViewTextPermission}>Lopro is a camera app! To continue, you'll need to allow Camera access in Settings.</Text>
+                <Text style={styles.modalViewTextPermission}>Lopro is a camera app! To continue, you'll need to allow Camera access in Settings. Once permission is granted, you can start scanning your inventory.</Text>
                 <Button styleOverride={styles.button} children={'Open Settings'}  onPress={() => Linking.openSettings() }/>
               </View>
             </View>
@@ -393,12 +393,13 @@ export default function Detail({ navigation, signOut, user }) {
           <SwitchButton inactive={scanVendorActive} children={'New Inventory'} onPress={() => onScanTypePressed('Vendor')}></SwitchButton>
           <SwitchButton inactive={scanActivateActive} children={'Pack Activate'} onPress={() => onScanTypePressed('Activate')}></SwitchButton>
         </View>
-        <Camera 
-          barCodeScannerSettings={{barCodeTypes: [BarCodeScanner.Constants.BarCodeType.Interleaved2of5, BarCodeScanner.Constants.BarCodeType.itf14]}} 
-          onBarCodeScanned={handleBarCodeScanned}
-          style={styles.camera} type={type} 
-        >
-          { cameraPermissionGranted &&
+        { cameraPermissionGranted &&
+          <Camera
+            barCodeScannerSettings={{barCodeTypes: [BarCodeScanner.Constants.BarCodeType.Interleaved2of5, BarCodeScanner.Constants.BarCodeType.itf14]}} 
+            onBarCodeScanned={handleBarCodeScanned}
+            style={styles.camera}
+            type={type}
+          >
             <BarcodeMask
               backgroundColor={scannedBackgroundColor}
               edgeBorderWidth={2}
@@ -411,13 +412,13 @@ export default function Detail({ navigation, signOut, user }) {
               showAnimatedLine={false}
               width={'85%'}
             />
-          }
-          { !cameraPermissionGranted &&
-            <View style={styles.cameraBlocked}>
-              <Button onPress={() => { setCameraPermissionModal(true); setCameraPermissionGranted(true);}} styleOverride={{width: '50%'}}>Start Scanning</Button>
-            </View>
-          }
-        </Camera>
+          </Camera>
+        }
+        { !cameraPermissionGranted &&
+          <View style={styles.cameraBlocked}>
+            <Button onPress={() => { setCameraPermissionModal(true); setCameraPermissionGranted(true);}} styleOverride={{width: '50%'}}>Start Scanning</Button>
+          </View>
+        }
         <View style={styles.scannedContainer}>
           <View style={styles.recentScansContainer}>
             <Text style={styles.recentScans}>Recent Scans</Text>
@@ -592,9 +593,10 @@ const styles = StyleSheet.create({
   },
   cameraBlocked: {
     alignItems: 'center',
-    backgroundColor: '#9C9C9C',
+    backgroundColor: '#000000',
+    borderRadius: 7,
     justifyContent: 'center',
-    height: '100%'
+    height: '40%'
   },
   container: {
     paddingTop: '10%',
