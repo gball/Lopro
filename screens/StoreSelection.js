@@ -1,9 +1,12 @@
 import { FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Camera } from 'expo-camera';
+
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import NextIcon from '../assets/next.svg';
 import React, { useEffect, useState } from 'react';
 
 export default function StoreSelection({ navigation, user }) {
+  const [permission, requestPermission] = Camera.useCameraPermissions();
   const [storeLocations, setStoreLocations] = useState([]);
 
   const handleStorePressed = async (store) => {
@@ -14,8 +17,14 @@ export default function StoreSelection({ navigation, user }) {
   };
 
   useEffect(() => {
+    if (permission != null) {
+      if (permission.canAskAgain && !permission.granted) {
+        requestPermission();
+      }
+    }
+
     setStoreLocations(user.storeList)
-  },[]);
+  },[permission]);
 
   const renderStoreLocations = ({ item, index }) => {
     let styling = styles.option;

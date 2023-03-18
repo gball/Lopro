@@ -37,6 +37,7 @@ const transformHeaderTitle = (title) => {
 export default function Detail({ navigation, signOut, user }) {
   const [barCodes] = useState(new Map());
   const [cameraPermissionModal, setCameraPermissionModal] = useState(false);
+  const [cameraPermissionGranted, setCameraPermissionGranted] = useState(false);
   const [confirmationNumber, setConfirmationNumber] = useState('');
   const [headerTitle, setHeaderTitle] = useState(user.storeList.length > 1 ? transformHeaderTitle(user.storeSelected.address) : transformHeaderTitle(user.storeSelected.name));
   const [manualPacketInput, setManualPacketInput] = useState('');
@@ -66,14 +67,16 @@ export default function Detail({ navigation, signOut, user }) {
   const modalStoreOptions = React.createRef();
   const packetMask = [/\d/, /\d/, /\d/, /\d/, ' ', '-', ' ', /\d/, /\d/, /\d/, /\d/, /\d/, /\d/, /\d/];
   const toast = useToast();
-  
+
   useEffect(() => {
     if (permission != null) {
       if (permission.canAskAgain && !permission.granted) {
+        setCameraPermissionGranted(false);
         requestPermission();
       } else if (permission.status == 'denied' || permission.status == 'undefined') {
-        setCameraPermissionModal(true);
+        setCameraPermissionGranted(false);
       } else {
+        setCameraPermissionGranted(true);
         return () => {};
       }
     }
@@ -365,7 +368,7 @@ export default function Detail({ navigation, signOut, user }) {
             <View style={styles.modalViewPermissions}>
               <View style={[styles.modalViewCentered, styles.modalViewCenteredPermissions]}>
                 <Text style={styles.modalViewText}>Oops!</Text>
-                <Text style={styles.modalViewTextPermission}>Lopro is a camera app! To continue, you'll need to allow Camera access in Settings. Lopro would like to use your camera so you can scan barcodes to track the inventory.</Text>
+                <Text style={styles.modalViewTextPermission}>Lopro is a camera app! To continue, you'll need to allow Camera access in Settings.</Text>
                 <Button styleOverride={styles.button} children={'Open Settings'}  onPress={() => Linking.openSettings() }/>
               </View>
             </View>
@@ -395,18 +398,25 @@ export default function Detail({ navigation, signOut, user }) {
           onBarCodeScanned={handleBarCodeScanned}
           style={styles.camera} type={type} 
         >
-          <BarcodeMask 
-            backgroundColor={scannedBackgroundColor}
-            edgeBorderWidth={2}
-            edgeColor={'#7FC803'}
-            edgeHeight={'100%'}
-            edgeRadius={5}
-            edgeWidth={'100%'}
-            height={'40%'}
-            outerMaskOpacity={0.5}
-            showAnimatedLine={false}
-            width={'85%'}
-          />
+          { cameraPermissionGranted &&
+            <BarcodeMask
+              backgroundColor={scannedBackgroundColor}
+              edgeBorderWidth={2}
+              edgeColor={'#7FC803'}
+              edgeHeight={'100%'}
+              edgeRadius={5}
+              edgeWidth={'100%'}
+              height={'40%'}
+              outerMaskOpacity={0.5}
+              showAnimatedLine={false}
+              width={'85%'}
+            />
+          }
+          { !cameraPermissionGranted &&
+            <View style={styles.cameraBlocked}>
+              <Button onPress={() => { setCameraPermissionModal(true); setCameraPermissionGranted(true);}} styleOverride={{width: '50%'}}>Start Scanning</Button>
+            </View>
+          }
         </Camera>
         <View style={styles.scannedContainer}>
           <View style={styles.recentScansContainer}>
@@ -580,6 +590,12 @@ const styles = StyleSheet.create({
     borderRadius: 7,
     overflow: 'hidden'
   },
+  cameraBlocked: {
+    alignItems: 'center',
+    backgroundColor: '#9C9C9C',
+    justifyContent: 'center',
+    height: '100%'
+  },
   container: {
     paddingTop: '10%',
     height: '100%',
@@ -692,7 +708,9 @@ const styles = StyleSheet.create({
   },
   modalViewPermissions: {
     height: '30%',
-    top: '35%',
+    left: '5%',
+    top: '22%',
+    width: '90%'
   },
   modalViewCentered: {
     alignItems: 'center',
