@@ -75,7 +75,8 @@ class App extends React.Component {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
-        'Accept': 'application/json'
+        'Accept': 'application/json',
+        'Cache-Control': 'max-age=3600'
       }
     })
     .then((response) => response.json())
