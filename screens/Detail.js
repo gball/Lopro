@@ -51,9 +51,9 @@ export default function Detail({ navigation, signOut, user }) {
   const [scanActivateActive, setScanActivateActive] = useState(false);
   const [scannedBackgroundColor, setScannedBackgroundColor] = useState('#000000');
   const [scannedCards, setScannedCards] = useState([]);
-  const [scanShiftActive, setScanShiftActive] = useState(true);
-  const [scanTypeUrl, setScanTypeUrl] = useState(Constants.expoConfig.aws.gatewayURL.addDailyScratchers);
-  const [scanVendorActive, setScanVendorActive] = useState(false);
+  const [scanShiftActive, setScanShiftActive] = useState(false);
+  const [scanTypeUrl, setScanTypeUrl] = useState(Constants.expoConfig.aws.gatewayURL.addLotteryVendedScratcher);
+  const [scanVendorActive, setScanVendorActive] = useState(true);
   const [selectedStoreAddress, setSelectedStoreAddress] = useState(user.storeSelected.address);
   const [selectedStoreName, setSelectedStoreName] = useState(user.storeSelected.name);
   const [shiftUrl] = useState(Constants.expoConfig.aws.gatewayURL.addDailyScratchers);
@@ -180,7 +180,7 @@ export default function Detail({ navigation, signOut, user }) {
           await AsyncStorage.removeItem('activePacks')
           await AsyncStorage.setItem('activePacks', JSON.stringify(packActivateMap))
         }
-        
+
         barCodes.clear();
         setScannedCards([...barCodes]);
         this.loadingButton.showLoading(false);
@@ -341,7 +341,7 @@ export default function Detail({ navigation, signOut, user }) {
           message = 'This packet does not exist.';
         }
         setManualEntryErrorMessage(message);
-      } else if (scanActivateActive && activePacks.has(parseInt(manualPacketInput)) == false) {
+      } else if (scanShiftActive && activePacks.has(parseInt(manualPacketInput)) == false) {
         let message = 'Pack has not been activated.';
         setManualEntryErrorMessage(message);
       } else {
@@ -406,9 +406,9 @@ export default function Detail({ navigation, signOut, user }) {
           </Pressable>
         </View>
         <View style={styles.options}>
-          <SwitchButton inactive={scanShiftActive} children={'Shift End'} onPress={() => onScanTypePressed('Shift')}></SwitchButton>
           <SwitchButton inactive={scanVendorActive} children={'New Inventory'} onPress={() => onScanTypePressed('Vendor')}></SwitchButton>
           <SwitchButton inactive={scanActivateActive} children={'Pack Activate'} onPress={() => onScanTypePressed('Activate')}></SwitchButton>
+          <SwitchButton inactive={scanShiftActive} children={'Shift End'} onPress={() => onScanTypePressed('Shift')}></SwitchButton>
         </View>
         { cameraPermissionGranted &&
           <Camera
