@@ -2,7 +2,7 @@
   "expo": {
     "name": "Lopro",
     "slug": "snack-df36616d-31ec-4b15-a714-4ed692e1c413",
-    "version": "0.1.5",
+    "version": "0.1.6",
     "orientation": "portrait",
     "icon": "./assets/logo.png",
     "userInterfaceStyle": "light",
@@ -19,7 +19,7 @@
     ],
     "ios": {
       "bundleIdentifier": "com.main.lopro",
-      "buildNumber": "0.1.5",
+      "buildNumber": "0.1.6",
       "infoPlist": {
         "NSCameraUsageDescription": "This app uses the camera to scan barcodes to track inventory."
       },
@@ -33,7 +33,7 @@
       },
       "package": "com.main.lopro",
       "softwareKeyboardLayoutMode": "pan",
-      "versionCode": 2
+      "versionCode": 3
     },
     "web": {
       "favicon": "./assets/logo.svg"
@@ -48,6 +48,7 @@
         "addLotteryVendedScratcher": "https://ptv9hf6ib5.execute-api.us-west-2.amazonaws.com/prod/addlotteryinventory",
         "contactTeam": "https://ptv9hf6ib5.execute-api.us-west-2.amazonaws.com/prod/contactteam",
         "customerStores": "https://ptv9hf6ib5.execute-api.us-west-2.amazonaws.com/prod/customerstores/",
+        "getActivePacks": "https://ptv9hf6ib5.execute-api.us-west-2.amazonaws.com/prod/getactivepacks/",
         "reportError": "https://ptv9hf6ib5.execute-api.us-west-2.amazonaws.com/prod/reportError/"
       }
     },

@@ -168,9 +168,17 @@ export default function Detail({ navigation, signOut, user }) {
         body: scanTypeUrl == shiftUrl ? JSON.stringify(body, (_key, value) => (value instanceof Map ? Array.from(value.entries()): value)) : JSON.stringify(body)
       })
       .then((response) => response.json())
-      .then((data) => {
+      .then(async (data) => {
         if (data.statusCode != 200) {
           throw data;
+        }
+        
+        if (scanActivateActive) {
+          let packActivateMap = JSON.parse(await AsyncStorage.getItem('activePacks'));
+          let newList = new Set(packActivateMap[user.storeSelected.id].concat([...barCodes.keys()]))
+          packActivateMap[user.storeSelected.id] = [...newList]
+          await AsyncStorage.removeItem('activePacks')
+          await AsyncStorage.setItem('activePacks', JSON.stringify(packActivateMap))
         }
         
         barCodes.clear();
@@ -178,6 +186,7 @@ export default function Detail({ navigation, signOut, user }) {
         this.loadingButton.showLoading(false);
         displayToast('Submission successful.', '#A1C349');
         setConfirmationNumber('');
+
         return true;
       })
       .catch(async (error) => {
@@ -219,6 +228,7 @@ export default function Detail({ navigation, signOut, user }) {
   };
 
   const handleBarCodeScanned = async ({ bounds, data }) => {
+    const activePacks = new Set(JSON.parse(await AsyncStorage.getItem('activePacks'))[user.storeSelected.id]);
     const scratcherValueMap = JSON.parse(await AsyncStorage.getItem('scratcherValueMap'));
     const windowsHeight = Dimensions.get('window').height;
     const windowsWidth = Dimensions.get('window').width;
@@ -240,6 +250,9 @@ export default function Detail({ navigation, signOut, user }) {
       scratcherInfo.ticketNumber = ticketNumber;
 
       if (barCodes.get(packNumber) == undefined && ticketNumber.length == 14 && scratcherInfo != undefined) {
+        if (scanShiftActive && !activePacks.has(packNumber)) {
+          return;
+        }
         // TODO: update solution ... this fixes some weird edge case where sometimes scan this (jank ass solution)
         if (ticketNumber.slice(0, 11) == '15000000000') {
           return;
@@ -317,6 +330,7 @@ export default function Detail({ navigation, signOut, user }) {
       }
     } else {
       const scratcherValueMap = JSON.parse(await AsyncStorage.getItem('scratcherValueMap'));
+      const activePacks = new Set(JSON.parse(await AsyncStorage.getItem('activePacks'))[user.storeSelected.id]);
       let scratcherInfo = scratcherValueMap[manualPacketInput.slice(0, 4)];
 
       if (manualPacketInput.length < 11 || scratcherInfo == undefined || barCodes.get(parseInt(manualPacketInput)) != undefined) {
@@ -326,6 +340,9 @@ export default function Detail({ navigation, signOut, user }) {
         } else if (scratcherInfo == undefined) {
           message = 'This packet does not exist.';
         }
+        setManualEntryErrorMessage(message);
+      } else if (scanActivateActive && activePacks.has(parseInt(manualPacketInput)) == false) {
+        let message = 'Pack has not been activated.';
         setManualEntryErrorMessage(message);
       } else {
         const manualLastTicketNumber = lastTicketNumberPerCostMap[scratcherInfo.value];

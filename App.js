@@ -60,6 +60,31 @@ class App extends React.Component {
     });
   }
 
+  async loadActivePacks(id, token) {
+    let body = {
+      customerId: id
+    };
+    await fetch(Constants.expoConfig.aws.gatewayURL.getActivePacks, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        'Authorization': token,
+        'Cache-Control': 'no-cache'
+      },
+      body: JSON.stringify(body)
+    })
+    .then((response) => response.json())
+    .then(async (res) => {
+      await AsyncStorage.removeItem('activePacks');
+      await AsyncStorage.setItem('activePacks', res.data);
+    })
+    .catch((err) => {
+      console.log(err)
+      console.log(`Error loading scratcher info: ${JSON.stringify(err)}`);
+    });;
+  }
+
   async loadAuth() {
     await Auth.currentAuthenticatedUser()
       .then(async (user) => {
@@ -95,6 +120,7 @@ class App extends React.Component {
 
   async signIn(user) {
     await this.getCusomterInfo(user.attributes.sub, user.signInUserSession.idToken.jwtToken);
+    await this.loadActivePacks(user.attributes.sub, user.signInUserSession.idToken.jwtToken);
     const customerInfo = JSON.parse(await AsyncStorage.getItem('customerInfo')); 
     const preferredDeviceStoreLocation = JSON.parse(await AsyncStorage.getItem('preferredDeviceStoreLocation'));
     const storeSelected = preferredDeviceStoreLocation != null ? preferredDeviceStoreLocation : customerInfo.storeList[0];
@@ -117,6 +143,7 @@ class App extends React.Component {
   async signOut() {
     await AsyncStorage.removeItem('preferredDeviceStoreLocation');
     await AsyncStorage.removeItem('customerInfo');
+    await AsyncStorage.removeItem('activePacks');
     await Auth.signOut()
       .catch((err) => {
         console.log('ERROR: ', err);
