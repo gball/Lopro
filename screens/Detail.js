@@ -44,16 +44,13 @@ export default function Detail({ navigation, signOut, user }) {
   const [manualConfirmationInput, setManualConfirmationInput] = useState('');
   const [manualEntryErrorMessage, setManualEntryErrorMessage] = useState('');
   const [manualEntryModalVisible, setManualEntryModalVisible] = useState(false);
-  const [confirmationModalVisible, setConfirmationModalVisible] = useState(false);
-  const [confirmationModalMessage, setConfirmationModalMessage] = useState('Are you ending a shift');
-  const [confirmationModalTitle, setConfirmationModalTitle] = useState('Ending Shift?');
   const [permission, requestPermission] = Camera.useCameraPermissions();
   const [scanActivateActive, setScanActivateActive] = useState(false);
   const [scannedBackgroundColor, setScannedBackgroundColor] = useState('#000000');
   const [scannedCards, setScannedCards] = useState([]);
   const [scanShiftActive, setScanShiftActive] = useState(false);
-  const [scanTypeUrl, setScanTypeUrl] = useState(Constants.expoConfig.aws.gatewayURL.addLotteryVendedScratcher);
-  const [scanVendorActive, setScanVendorActive] = useState(true);
+  const [scanTypeUrl, setScanTypeUrl] = useState('');
+  const [scanVendorActive, setScanVendorActive] = useState(false);
   const [selectedStoreAddress, setSelectedStoreAddress] = useState(user.storeSelected.address);
   const [selectedStoreName, setSelectedStoreName] = useState(user.storeSelected.name);
   const [shiftUrl] = useState(Constants.expoConfig.aws.gatewayURL.addDailyScratchers);
@@ -139,6 +136,11 @@ export default function Detail({ navigation, signOut, user }) {
   }
 
   triggerDailyScratcherReport = async () => {
+    if (scanTypeUrl.length == 0) {
+      displayToast('Please select scan type.', '#F56969');
+      return;
+    }
+
     this.loadingButton.showLoading(true);
     let body = {
       confirmationNumber: confirmationNumber,
@@ -186,6 +188,10 @@ export default function Detail({ navigation, signOut, user }) {
         this.loadingButton.showLoading(false);
         displayToast('Submission successful.', '#A1C349');
         setConfirmationNumber('');
+        setScanActivateActive(false);
+        setScanShiftActive(false);
+        setScanVendorActive(false);
+        setScanTypeUrl('');
 
         return true;
       })
@@ -285,22 +291,16 @@ export default function Detail({ navigation, signOut, user }) {
 
   const onScanTypePressed = async (scanType) => {
     if (scanType == 'Vendor') {
-      setConfirmationModalMessage('Is this submission for new inventory from lotto');
-      setConfirmationModalTitle('New Inventory from Lotto?');
       setScanActivateActive(false);
       setScanShiftActive(false);
       setScanVendorActive(true);
       setScanTypeUrl(Constants.expoConfig.aws.gatewayURL.addLotteryVendedScratcher);
     } else if (scanType == 'Shift') {
-      setConfirmationModalMessage('Are you ending a shift');
-      setConfirmationModalTitle('Ending Shift?');
       setScanActivateActive(false);
       setScanShiftActive(true);
       setScanVendorActive(false);
       setScanTypeUrl(Constants.expoConfig.aws.gatewayURL.addDailyScratchers);
     } else {
-      setConfirmationModalMessage('Are you activating new pack(s)');
-      setConfirmationModalTitle('New Pack Activation?');
       setScanActivateActive(true);
       setScanShiftActive(false);
       setScanVendorActive(false);
@@ -517,37 +517,10 @@ export default function Detail({ navigation, signOut, user }) {
           titleColor='rgb(255,255,255)'
           backgroundColor={scannedCards.length == 0 ? '#9C9C9C' :'#7FC803'}
           borderRadius={8}
-          onPress={() => setConfirmationModalVisible(true)}
+          onPress={() => triggerDailyScratcherReport()}
           titleFontWeight={'600'}
           disabled={scannedCards.length == 0 ? true : false}
         />
-        <Modal
-          animationType='slide'
-          onRequestClose={() => { setConfirmationModalVisible(!confirmationModalVisible); }}
-          transparent={true}
-          visible={confirmationModalVisible}
-        >
-          <View style={styles.modalViewConfirmation}>
-            <Pressable 
-              style={styles.modalViewCloseIcon}
-              onPress={() => setConfirmationModalVisible(!confirmationModalVisible)}
-            >
-              <CloseIcon/>
-            </Pressable>
-            <View style={styles.modalViewCentered}>
-              <Text style={styles.modalViewText}>{confirmationModalTitle}</Text>
-              <Text style={styles.modalViewSubtext}>{confirmationModalMessage} for store {selectedStoreName} at address {selectedStoreAddress}?</Text>
-              <View style={styles.buttonContainer}>
-                <Button 
-                  styleOverride={styles.buttonWhite} 
-                  children={'No'} 
-                  onPress={() => setConfirmationModalVisible(!confirmationModalVisible)}
-                />
-                <Button styleOverride={styles.button} children={'Yes'}  onPress={() => { setConfirmationModalVisible(!confirmationModalVisible); triggerDailyScratcherReport() }}/>
-              </View>
-            </View>
-          </View>
-        </Modal>
       </View>
       <Modalize ref={modalSettingOptions} adjustToContentHeight={true}>
         <View style={styles.modalBottomContainer}>
@@ -721,10 +694,6 @@ const styles = StyleSheet.create({
     height: Dimensions.get('window').height * 0.32,
     top: Platform.OS == 'ios' ? Dimensions.get('window').height * 0.185 : Dimensions.get('window').height * 0.15 
   },
-  modalViewConfirmation: {
-    height: '26%',
-    top: '60%'
-  },
   modalViewPermissions: {
     height: '30%',
     left: '5%',
@@ -762,11 +731,6 @@ const styles = StyleSheet.create({
   modalViewText: {
     fontSize: 18,
     fontWeight: '600'
-  },
-  modalViewSubtext: {
-    fontSize: 16,
-    marginTop: 16,
-    textAlign: 'center'
   },
   modalViewTextPermission: {
     marginBottom: 16,
