@@ -289,7 +289,40 @@ export default function Detail({ navigation, signOut, user }) {
     barCodes.delete(packNumber);
   };
 
+  const loadActivePacks =  async (id, token) => {
+    let body = {
+      customerId: id
+    };
+    await fetch(Constants.expoConfig.aws.gatewayURL.getActivePacks, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        'Authorization': token,
+        'Cache-Control': 'no-cache'
+      },
+      body: JSON.stringify(body)
+    })
+    .then((response) => response.json())
+    .then(async (res) => {
+      await AsyncStorage.removeItem('activePacks');
+      await AsyncStorage.setItem('activePacks', res.data);
+    })
+    .catch((err) => {
+      console.log(err)
+      console.log(`Error loading scratcher info: ${JSON.stringify(err)}`);
+    });;
+  }
+
   const onScanTypePressed = async (scanType) => {
+    const decodedAccessToken = jwt_decode(user.accessToken);
+    const dateNow = new Date();
+    if ((decodedAccessToken.exp * 1000) < dateNow.getTime()) {
+      user.clientToken = await getUpdatedToken();
+    }
+
+    await loadActivePacks(user.id, user.clientToken);
+
     if (scanType == 'Vendor') {
       setScanActivateActive(false);
       setScanShiftActive(false);
