@@ -7,6 +7,7 @@ import { Modalize } from 'react-native-modalize';
 import { useToast } from 'react-native-toast-notifications';
 import { FlashList } from "@shopify/flash-list";
 import AddIcon from '../assets/add.svg';
+import AddDisabledIcon from '../assets/addDisabled.svg';
 import ArrowDownIcon from '../assets/arrow-down.svg';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import BarcodeMask from '../components/BarcodeMask';
@@ -472,9 +473,14 @@ export default function Detail({ navigation, signOut, user }) {
         <View style={styles.scannedContainer}>
           <View style={styles.recentScansContainer}>
             <Text style={styles.recentScans}>Recent Scans</Text>
-            <Pressable onPress={() => setManualEntryModalVisible(true)}>
-              <AddIcon/>
-            </Pressable>
+            { scanTypeUrl.length !== 0 &&
+              <Pressable onPress={() => setManualEntryModalVisible(true)}>
+                <AddIcon/>
+              </Pressable>
+            }
+            { scanTypeUrl.length === 0 &&
+              <AddDisabledIcon/>
+            }
             <Modal
               animationType='slide'
               onRequestClose={() => {
