@@ -44,6 +44,7 @@ export default function Detail({ navigation, signOut, user }) {
   const [manualConfirmationInput, setManualConfirmationInput] = useState('');
   const [manualEntryErrorMessage, setManualEntryErrorMessage] = useState('');
   const [manualEntryModalVisible, setManualEntryModalVisible] = useState(false);
+  const [missingScanSelectionError, setMissingScanSelectionError] = useState(false);
   const [permission, requestPermission] = Camera.useCameraPermissions();
   const [scanActivateActive, setScanActivateActive] = useState(false);
   const [scannedBackgroundColor, setScannedBackgroundColor] = useState('#000000');
@@ -136,11 +137,6 @@ export default function Detail({ navigation, signOut, user }) {
   }
 
   triggerDailyScratcherReport = async () => {
-    if (scanTypeUrl.length == 0) {
-      displayToast('Please select scan type.', '#F56969');
-      return;
-    }
-
     this.loadingButton.showLoading(true);
     let body = {
       confirmationNumber: confirmationNumber,
@@ -175,14 +171,6 @@ export default function Detail({ navigation, signOut, user }) {
           throw data;
         }
         
-        if (scanActivateActive) {
-          let packActivateMap = JSON.parse(await AsyncStorage.getItem('activePacks'));
-          let newList = new Set(packActivateMap[user.storeSelected.id].concat([...barCodes.keys()]))
-          packActivateMap[user.storeSelected.id] = [...newList]
-          await AsyncStorage.removeItem('activePacks')
-          await AsyncStorage.setItem('activePacks', JSON.stringify(packActivateMap))
-        }
-
         barCodes.clear();
         setScannedCards([...barCodes]);
         this.loadingButton.showLoading(false);
@@ -234,6 +222,18 @@ export default function Detail({ navigation, signOut, user }) {
   };
 
   const handleBarCodeScanned = async ({ bounds, data }) => {
+    if (scanTypeUrl.length == 0) {
+      if (!missingScanSelectionError) {
+        setMissingScanSelectionError(true)
+        displayToast('Please select scan type.', '#F56969');
+        setTimeout(() => {
+          setMissingScanSelectionError(false)
+        }, 3000);
+      }
+      
+      return;
+    }
+
     const activePacks = new Set(JSON.parse(await AsyncStorage.getItem('activePacks'))[user.storeSelected.id]);
     const scratcherValueMap = JSON.parse(await AsyncStorage.getItem('scratcherValueMap'));
     const windowsHeight = Dimensions.get('window').height;
