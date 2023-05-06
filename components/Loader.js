@@ -113,7 +113,7 @@ export default class Component extends React.PureComponent {
             fontFamily: this.props.titleFontFamily,
             fontSize: this.props.titleFontSize,
             fontWeight: this.props.titleFontWeight,
-            disbaled: this.props.disabled,
+            disabled: this.props.disabled,
             disabledColor: this.props.disabledColor
           }
         ]}
