@@ -46,6 +46,7 @@ export default function Detail({ navigation, signOut, user }) {
   const [manualEntryErrorMessage, setManualEntryErrorMessage] = useState('');
   const [manualEntryModalVisible, setManualEntryModalVisible] = useState(false);
   const [missingScanSelectionError, setMissingScanSelectionError] = useState(false);
+  const [packNotActive, setPackNotActive] = useState(false);
   const [permission, requestPermission] = Camera.useCameraPermissions();
   const [scanActivateActive, setScanActivateActive] = useState(false);
   const [scannedBackgroundColor, setScannedBackgroundColor] = useState('#000000');
@@ -258,6 +259,13 @@ export default function Detail({ navigation, signOut, user }) {
 
       if (barCodes.get(packNumber) == undefined && ticketNumber.length == 14 && scratcherInfo != undefined) {
         if (scanShiftActive && !activePacks.has(packNumber)) {
+          if (!packNotActive) {
+            setPackNotActive(true)
+            displayToast(`Pack, ${packNumber}, not active.`, '#F56969');
+            setTimeout(() => {
+              setPackNotActive(false)
+            }, 3000);
+          }
           return;
         }
         // TODO: update solution ... this fixes some weird edge case where sometimes scan this (jank ass solution)
@@ -763,7 +771,7 @@ const styles = StyleSheet.create({
   },
   modalViewErrorMessage: {
     color: '#F56969',
-    fontSize: '16',
+    fontSize: 16,
     position: 'absolute',
     top: '95%'
   },
