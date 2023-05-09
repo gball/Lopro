@@ -33,7 +33,7 @@
       },
       "package": "com.main.lopro",
       "softwareKeyboardLayoutMode": "pan",
-      "versionCode": 4
+      "versionCode": 5
     },
     "web": {
       "favicon": "./assets/logo.svg"
